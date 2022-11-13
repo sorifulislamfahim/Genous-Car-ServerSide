@@ -42,7 +42,8 @@ async function run() {
 
         app.get('/services', async (req, res) => {
             const query = {}
-            const cursor = serviceCollection.find(query)
+            const order = req.query.order === 'asc' ? 1 : -1;
+            const cursor = serviceCollection.find(query).sort({ price: order })
             const services = await cursor.toArray();
             res.send(services);
         })
@@ -58,8 +59,8 @@ async function run() {
         app.get('/orders', verifyJWT, async (req, res) => {
             const decoded = req.decoded;
 
-            if(decoded?.email !== req.query.email){
-                res.status(403).send({message: 'unauthorized access'})
+            if (decoded?.email !== req.query.email) {
+                res.status(403).send({ message: 'unauthorized access' })
             }
 
             let query = {};
